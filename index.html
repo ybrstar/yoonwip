@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1c1d22">
+<title>도현 디스코드</title>
+
+<style>
+:root {
+  --bg:#1c1d22;
+  --header:#1c1d22;
+  --text:#f2f3f5;
+  --sub:#949ba4;
+  --line:#35363d;
+  --panel:#25262d;
+  --reaction:#303138;
+  --accent:#7289da;
+}
+
+body.light {
+  --bg:#ffffff;
+  --header:#ffffff;
+  --text:#232428;
+  --sub:#777982;
+  --line:#e4e5e9;
+  --panel:#f2f3f5;
+  --reaction:#e7e8eb;
+  --accent:#5865f2;
+}
+
+* {
+  box-sizing:border-box;
+}
+
+html {
+  scroll-behavior:smooth;
+}
+
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Noto Sans KR",
+    Arial,
+    sans-serif;
+  font-size:15px;
+}
+
+button,input {
+  font:inherit;
+}
+
+button {
+  cursor:pointer;
+}
+
+header {
+  position:sticky;
+  top:0;
+  height:64px;
+  background:var(--header);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 18px;
+  z-index:20;
+}
+
+.title {
+  font-size:18px;
+  font-weight:750;
+}
+
+.icon-btn {
+  background:none;
+  border:0;
+  color:var(--text);
+  font-size:23px;
+  padding:8px;
+}
+
+main {
+  max-width:800px;
+  margin:auto;
+  padding:20px 0 100px;
+}
+
+.date-divider {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:24px 18px;
+  color:var(--sub);
+  font-size:12px;
+  font-weight:600;
+}
+
+.date-divider:before,
+.date-divider:after {
+  content:"";
+  flex:1;
+  height:1px;
+  background:var(--line);
+}
+
+.message {
+  display:flex;
+  gap:12px;
+  padding:12px 16px;
+}
+
+.avatar {
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:var(--accent);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  flex-shrink:0;
+  overflow:hidden;
+}
+
+.avatar img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.message-body {
+  min-width:0;
+  flex:1;
+}
+
+.message-head {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  flex-wrap:wrap;
+  margin-bottom:4px;
+}
+
+.username {
+  font-weight:750;
+  font-size:15px;
+}
+
+.time {
+  font-size:11px;
+  color:var(--sub);
+}
+
+.content {
+  font-size:15px;
+  line-height:1.55;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+
+.reply {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--sub);
+  font-size:12px;
+  margin-bottom:8px;
+  border-left:2px solid var(--sub);
+  padding-left:10px;
+  line-height:1.4;
+}
+
+.reply-name {
+  color:var(--accent);
+  font-weight:700;
+}
+
+.reactions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:9px;
+}
+
+.reaction {
+  background:var(--reaction);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:5px 9px;
+  font-size:17px;
+}
+
+.media {
+  margin-top:10px;
+}
+
+.media img,
+.media video {
+  max-width:100%;
+  max-height:420px;
+  border-radius:12px;
+  display:block;
+  cursor:pointer;
+}
+
+.menu {
+  position:fixed;
+  right:12px;
+  top:70px;
+  width:min(300px,calc(100vw - 24px));
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px;
+  z-index:30;
+  box-shadow:0 12px 35px #0003;
+  display:none;
+}
+
+.menu.show {
+  display:block;
+}
+
+.menu button {
+  display:block;
+  width:100%;
+  background:none;
+  border:0;
+  color:var(--text);
+  text-align:left;
+  padding:13px;
+  border-radius:9px;
+}
+
+.menu button:hover {
+  background:var(--reaction);
+}
+
+.menu-label {
+  font-size:12px;
+  color:var(--sub);
+  margin:12px 10px 5px;
+}
+
+.theme-row {
+  display:flex;
+  gap:8px;
+}
+
+.theme-row button {
+  text-align:center;
+  background:var(--reaction);
+}
+
+.theme-row button.active {
+  background:var(--accent);
+  color:white;
+}
+
+.panel {
+  position:fixed;
+  inset:0;
+  background:var(--bg);
+  z-index:40;
+  display:none;
+  overflow-y:auto;
+}
+
+.panel.show {
+  display:block;
+}
+
+.panel-header {
+  position:sticky;
+  top:0;
+  background:var(--header);
+  border-bottom:1px solid var(--line);
+  padding:16px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  z-index:2;
+}
+
+.panel-header strong {
+  flex:1;
+  font-size:17px;
+}
+
+.search-input,
+.date-input {
+  width:100%;
+  background:var(--panel);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:13px;
+  outline:none;
+}
+
+.panel-content {
+  padding:16px;
+  max-width:800px;
+  margin:auto;
+}
+
+.result {
+  padding:14px 4px;
+  border-bottom:1px solid var(--line);
+  cursor:pointer;
+}
+
+.result-date {
+  font-size:12px;
+  color:var(--sub);
+  margin-bottom:5px;
+}
+
+.result-text {
+  line-height:1.5;
+}
+
+.media-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:3px;
+}
+
+.media-item {
+  aspect-ratio:1;
+  background:var(--panel);
+  overflow:hidden;
+  cursor:pointer;
+  position:relative;
+}
+
+.media-item img,
+.media-item video {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.media-item .play {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:32px;
+  text-shadow:0 2px 10px black;
+  pointer-events:none;
+}
+
+.empty {
+  text-align:center;
+  color:var(--sub);
+  padding:55px 15px;
+  line-height:1.7;
+}
+
+.move-buttons {
+  position:fixed;
+  bottom:25px;
+  right:18px;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  z-index:15;
+}
+
+.move-buttons button {
+  width:43px;
+  height:43px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:var(--panel);
+  color:var(--text);
+  font-size:21px;
+  box-shadow:0 3px 12px #0002;
+}
+
+.viewer {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.96);
+  z-index:60;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.viewer.show {
+  display:flex;
+}
+
+.viewer img,
+.viewer video {
+  max-width:100%;
+  max-height:85vh;
+  object-fit:contain;
+}
+
+.viewer-close {
+  position:absolute;
+  top:18px;
+  right:18px;
+  background:#333;
+  color:white;
+  border:0;
+  border-radius:50%;
+  width:42px;
+  height:42px;
+  font-size:24px;
+}
+
+@media(min-width:700px) {
+  .message {
+    padding-left:30px;
+    padding-right:30px;
+  }
+
+  .avatar {
+    width:46px;
+    height:46px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="title"># 도현 디스코드</div>
+  <button class="icon-btn" onclick="toggleMenu()">☰</button>
+</header>
+
+<div class="menu" id="menu">
+  <button onclick="openPanel('search')">⌕　대화 검색</button>
+  <button onclick="openPanel('dates')">▦　날짜로 이동</button>
+  <button onclick="openPanel('media')">▧　사진·영상 모아보기</button>
+
+  <div class="menu-label">테마</div>
+  <div class="theme-row">
+    <button id="darkBtn" onclick="setTheme('dark')">다크</button>
+    <button id="lightBtn" onclick="setTheme('light')">라이트</button>
+  </div>
+
+  <div class="menu-label">위·아래 이동 버튼</div>
+  <div class="theme-row">
+    <button onclick="setMoveButtons(true)">보이기</button>
+    <button onclick="setMoveButtons(false)">숨기기</button>
+  </div>
+</div>
+
+<main id="chat"></main>
+
+<div class="move-buttons" id="moveButtons">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">↓</button>
+</div>
+
+<div class="panel" id="searchPanel">
+  <div class="panel-header">
+    <button class="icon-btn" onclick="closePanels()">←</button>
+    <strong>대화 검색</strong>
+  </div>
+  <div class="panel-content">
+    <input
+      class="search-input"
+      id="searchInput"
+      placeholder="메시지 검색"
+      oninput="searchMessages()"
+    >
+    <div id="searchResults"></div>
+  </div>
+</div>
+
+<div class="panel" id="datesPanel">
+  <div class="panel-header">
+    <button class="icon-btn" onclick="closePanels()">←</button>
+    <strong>날짜로 이동</strong>
+  </div>
+  <div class="panel-content">
+    <input class="date-input" type="date" id="dateInput">
+    <div id="dateResults"></div>
+  </div>
+</div>
+
+<div class="panel" id="mediaPanel">
+  <div class="panel-header">
+    <button class="icon-btn" onclick="closePanels()">←</button>
+    <strong>사진·영상 모아보기</strong>
+  </div>
+  <div class="panel-content">
+    <div class="media-grid" id="mediaGrid"></div>
+  </div>
+</div>
+
+<div class="viewer" id="viewer" onclick="closeViewer()">
+  <button class="viewer-close" onclick="closeViewer()">×</button>
+  <div id="viewerContent" onclick="event.stopPropagation()"></div>
+</div>
+
+<script>
+
+/*
+  도현 디스코드 메시지 데이터
+
+  date: YYYY-MM-DD
+  time: HH:MM
+  text: 메시지 내용
+  reply: 답장한 원문 (선택)
+  reactions: 이모지 배열
+  media: 이미지 또는 영상 주소 (선택)
+  mediaType: image 또는 video
+
+  실제 날짜가 확인된 메시지만 입력합니다.
+  아래는 화면 확인을 위한 샘플입니다.
+*/
+
+const messages = [
+  {
+    id:1,
+    date:"2026-11-09",
+    time:"19:15",
+    text:"",
+    media:"",
+    mediaType:"image",
+    reactions:["❤️","👍","😎","😍"]
+  },
+  {
+    id:2,
+    date:"2026-11-12",
+    time:"21:39",
+    text:"오늘 반가웠어~~",
+    reactions:["❤️","😎"]
+  },
+  {
+    id:3,
+    date:"2026-11-12",
+    time:"21:40",
+    text:"아놔 ㅋㅋㅋㅋㅋ",
+    reply:{
+      name:"@",
+      text:"첨부파일에 대한 답장"
+    },
+    reactions:["❤️","🤣","😎"]
+  },
+  {
+    id:4,
+    date:"2026-11-12",
+    time:"21:41",
+    text:"잼났어 ㅋㅋ",
+    reactions:["❤️","😎"]
+  },
+  {
+    id:5,
+    date:"2026-11-12",
+    time:"21:41",
+    text:"잉스타 올렸어~~",
+    reactions:["❤️","😎"]
+  },
+  {
+    id:6,
+    date:"2026-11-12",
+    time:"21:41",
+    text:"사진이 잘나옴",
+    reactions:["❤️","📷","😎","🌨️"]
+  }
+];
+
+const chat = document.getElementById("chat");
+
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#39;");
+}
+
+function formatDate(date) {
+  const [y,m,d] = date.split("-");
+  return `${y}년 ${Number(m)}월 ${Number(d)}일`;
+}
+
+function formatTime(time) {
+  const [h,m] = time.split(":").map(Number);
+  return `${h >= 12 ? "오후" : "오전"} ${h % 12 || 12}:${String(m).padStart(2,"0")}`;
+}
+
+function mediaHTML(message) {
+  if(!message.media) return "";
+
+  const url = escapeHTML(message.media);
+
+  if(message.mediaType === "video") {
+    return `
+      <div class="media">
+        <video src="${url}" controls playsinline></video>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="media">
+      <img src="${url}" alt="윤도현이 올린 이미지"
+        onclick="openViewer('${message.id}')">
+    </div>
+  `;
+}
+
+function renderMessages() {
+  chat.innerHTML = "";
+
+  const sorted = [...messages].sort((a,b) =>
+    (a.date+" "+a.time).localeCompare(b.date+" "+b.time)
+  );
+
+  let lastDate = "";
+
+  sorted.forEach(message => {
+
+    if(message.date !== lastDate) {
+      const divider = document.createElement("div");
+      divider.className = "date-divider";
+      divider.id = "date-" + message.date;
+      divider.textContent = formatDate(message.date);
+      chat.appendChild(divider);
+      lastDate = message.date;
+    }
+
+    const el = document.createElement("article");
+    el.className = "message";
+    el.id = "message-" + message.id;
+
+    const reply = message.reply
+      ? `<div class="reply">
+          <span class="reply-name">${escapeHTML(message.reply.name)}</span>
+          <span>${escapeHTML(message.reply.text)}</span>
+        </div>`
+      : "";
+
+    const reactions = (message.reactions || [])
+      .map(emoji =>
+        `<span class="reaction">${escapeHTML(emoji)}</span>`
+      ).join("");
+
+    el.innerHTML = `
+      <div class="avatar">Y</div>
+      <div class="message-body">
+        ${reply}
+        <div class="message-head">
+          <span class="username">Yoon WIP</span>
+          <span class="time">${formatTime(message.time)}</span>
+        </div>
+        ${message.text
+          ? `<div class="content">${escapeHTML(message.text)}</div>`
+          : ""}
+        ${mediaHTML(message)}
+        ${reactions
+          ? `<div class="reactions">${reactions}</div>`
+          : ""}
+      </div>
+    `;
+
+    chat.appendChild(el);
+  });
+}
+
+function toggleMenu() {
+  document.getElementById("menu").classList.toggle("show");
+}
+
+function openPanel(type) {
+  document.getElementById("menu").classList.remove("show");
+  closePanels();
+
+  document.getElementById(type+"Panel").classList.add("show");
+
+  if(type === "media") renderMedia();
+  if(type === "dates") renderDates();
+  if(type === "search") {
+    document.getElementById("searchInput").focus();
+  }
+}
+
+function closePanels() {
+  document.querySelectorAll(".panel").forEach(panel =>
+    panel.classList.remove("show")
+  );
+}
+
+function searchMessages() {
+  const query = document.getElementById("searchInput")
+    .value.trim().toLowerCase();
+
+  const results = document.getElementById("searchResults");
+
+  if(!query) {
+    results.innerHTML = "";
+    return;
+  }
+
+  const found = messages.filter(message =>
+    (message.text || "").toLowerCase().includes(query)
+  );
+
+  if(!found.length) {
+    results.innerHTML = `<div class="empty">검색 결과가 없어요.</div>`;
+    return;
+  }
+
+  results.innerHTML = found.map(message => `
+    <div class="result" onclick="goToMessage(${message.id})">
+      <div class="result-date">
+        ${formatDate(message.date)} · ${formatTime(message.time)}
+      </div>
+      <div class="result-text">${escapeHTML(message.text)}</div>
+    </div>
+  `).join("");
+}
+
+function renderDates() {
+  const dates = [...new Set(messages.map(m => m.date))].sort().reverse();
+
+  const results = document.getElementById("dateResults");
+
+  results.innerHTML = dates.map(date => `
+    <div class="result" onclick="goToDate('${date}')">
+      ${formatDate(date)}
+    </div>
+  `).join("");
+
+  document.getElementById("dateInput").onchange = function() {
+    if(this.value) goToDate(this.value);
+  };
+}
+
+function goToDate(date) {
+  const target = document.getElementById("date-"+date);
+
+  if(!target) {
+    alert("해당 날짜에 등록된 메시지가 없어요.");
+    return;
+  }
+
+  closePanels();
+  target.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function goToMessage(id) {
+  closePanels();
+
+  const target = document.getElementById("message-"+id);
+
+  if(target) {
+    target.scrollIntoView({behavior:"smooth",block:"center"});
+    target.style.background = "var(--reaction)";
+
+    setTimeout(() => {
+      target.style.background = "";
+    },1800);
+  }
+}
+
+function renderMedia() {
+  const grid = document.getElementById("mediaGrid");
+
+  const items = messages.filter(message => message.media);
+
+  if(!items.length) {
+    grid.innerHTML = `
+      <div class="empty" style="grid-column:1/-1">
+        아직 등록된 사진이나 영상이 없어요.
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = items.map(message => {
+
+    const url = escapeHTML(message.media);
+
+    if(message.mediaType === "video") {
+      return `
+        <div class="media-item" onclick="openViewer(${message.id})">
+          <video src="${url}" muted preload="metadata"></video>
+          <div class="play">▶</div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="media-item" onclick="openViewer(${message.id})">
+        <img src="${url}" loading="lazy" alt="미디어">
+      </div>
+    `;
+  }).join("");
+}
+
+function openViewer(id) {
+  const message = messages.find(m => m.id == id);
+  if(!message || !message.media) return;
+
+  const url = escapeHTML(message.media);
+  const content = document.getElementById("viewerContent");
+
+  if(message.mediaType === "video") {
+    content.innerHTML = `<video src="${url}" controls autoplay playsinline></video>`;
+  } else {
+    content.innerHTML = `<img src="${url}" alt="확대 이미지">`;
+  }
+
+  document.getElementById("viewer").classList.add("show");
+}
+
+function closeViewer() {
+  document.getElementById("viewer").classList.remove("show");
+  document.getElementById("viewerContent").innerHTML = "";
+}
+
+function setTheme(theme) {
+  document.body.classList.toggle("light",theme === "light");
+  localStorage.setItem("yoonwip-theme",theme);
+
+  document.getElementById("darkBtn").classList.toggle(
+    "active",theme === "dark"
+  );
+
+  document.getElementById("lightBtn").classList.toggle(
+    "active",theme === "light"
+  );
+}
+
+function setMoveButtons(show) {
+  document.getElementById("moveButtons").style.display =
+    show ? "flex" : "none";
+
+  localStorage.setItem("yoonwip-move",show ? "show" : "hide");
+}
+
+document.addEventListener("click",event => {
+  const menu = document.getElementById("menu");
+
+  if(!menu.contains(event.target) &&
+     !event.target.closest("header .icon-btn")) {
+    menu.classList.remove("show");
+  }
+});
+
+renderMessages();
+
+setTheme(localStorage.getItem("yoonwip-theme") || "dark");
+
+setMoveButtons(
+  localStorage.getItem("yoonwip-move") !== "hide"
+);
+
+</script>
+</body>
+</html>
